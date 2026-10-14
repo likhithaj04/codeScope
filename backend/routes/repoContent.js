@@ -7,9 +7,10 @@ import { parseGithubUrl } from '../src/Utils/parseGithubUrl.js';
 router.post("/", async (req, res) => {
     try {
         const { url } = req.body;
-        console.log("reached");
-        
+        console.log("reached",url);
         const result = await getRepository(url)
+        console.log(result);
+        
         res.json(result)
         
     } catch (error) {

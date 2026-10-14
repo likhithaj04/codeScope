@@ -6,12 +6,14 @@ const octokit=new Octokit({
 auth:process.env.GITHUB_TOKEN
 })
 
-const url='https://github.com/facebook/react'
+// const url='https://github.com/facebook/react'
 
 
 
 
 export async function getRepository(url) {
+    console.log('url reaches',url);
+    
     const {owner,repo}=parseGithubUrl(url)
 
     const response=await octokit.rest.repos.get({

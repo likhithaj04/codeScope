@@ -1,9 +1,10 @@
 import 'dotenv/config'
 import express from 'express'
 import repoRoute from './routes/repoContent.js'
-
+import cors from 'cors'
 
 const app=express()
+app.use(cors({origin:'http://localhost:5173'}))
 app.use(express.json());
 
 // const response=await octokit.rest.repos.get({

@@ -1,7 +1,7 @@
 // const url='https://github.com/facebook/react'
 
 export function parseGithubUrl(url) {
-    console.log("reached",url);
+    console.log("reached urll-parse",url);
     
     let parsedUrl;
 
