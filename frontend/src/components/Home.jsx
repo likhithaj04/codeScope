@@ -13,40 +13,62 @@ const [content, setContent] = useState({
 });    
  const [loading,setLoading]=useState(false)
 
+ const [repoCache,setRepoCache]=useState({})
+ const [fileCache,setFileCache]=useState({})
+
     async function handleSearch() {
       setLoading(true)
-    console.log(urldata);
-    
-    const search = await api.post("/api/repository",{
+    // console.log(urldata);
+
+    // if(!repoCache){
+       const search = await api.post("/api/repository",{
       url:urldata
     })
 console.log(search.data.tree.children);
   setRepoData(search.data)
+// setRepoCache(search.data)
+    // }
+   
   setLoading(false)
   }
 
 
-  async function handleFileSelect(path,item){
-    // // console.log(path);
-    // console.log("repourldata",repoData.repository);
-    // // console.log(repoData.repository.html_url);
-        setLoading(true)
+async function handleFileSelect(item, path) {
+  const filePath = item.path || path.path;
+  const cacheKey = `${urldata}:${filePath}`;
 
-  const res= await api.get("/api/repository/file",{
-    params:{
-      url: `${urldata}`,
-      path:path.path
-    }
-  })
-setContent({
-    path: res.data.path,
-    content: res.data.content,
-  });
-  console.log(res.data);
-setLoading(false)
-// console.log(res.data.content);
-  
+  if (fileCache[cacheKey]) {
+    console.log("fetching from filecache");
+    
+    setContent(fileCache[cacheKey]);
+    return;
   }
+
+  setLoading(true);
+
+  try {
+    const res = await api.get("/api/repository/file", {
+      params: {
+        url: urldata,
+        path: filePath,
+      },
+    });
+
+    const fileData = {
+      path: res.data.path,
+      content: res.data.content,
+    };
+
+    setFileCache((prev) => ({
+      ...prev,
+      [cacheKey]: fileData,
+    }));
+
+    setContent(fileData);
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <>
