@@ -25,7 +25,7 @@ router.get("/file",async(req,res)=>{
         console.log("hit");
 
     const { url, path } = req.query;
-console.log(url,path);
+console.log(url);
 
     if (!url || !path) {
       return res.status(400).json({
@@ -39,6 +39,10 @@ console.log(url,path);
       parsedRepo.repo,
       path
     );
+    console.log("got content");
+    
+    console.log("contenttttt",content);
+    
     res.json({path,content})
 }catch (error) {
     res.status(400).json({ error: error.message });

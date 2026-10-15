@@ -11,6 +11,7 @@ export function parseGithubUrl(url) {
     } catch {
         throw new Error("Please provide a valid URL");
     }
+console.log("parsed");
 
 
      if (
@@ -21,7 +22,7 @@ export function parseGithubUrl(url) {
   }
 
     const parts = parsedUrl.pathname.split("/").filter(Boolean)
-    // console.log(parts);
+    console.log("here parts",parts);
 
     if (parts.length < 2) {
         throw new Error("Invalid GitHub repository URL");
@@ -31,6 +32,7 @@ export function parseGithubUrl(url) {
     console.log(owner,repo);
 
     return { owner, repo }
+    // console.log(owner,repo);
     
 }
 

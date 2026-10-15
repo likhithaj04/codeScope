@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { FaFileLines, FaFileCode } from "react-icons/fa6";
 
-export default function File({ items = [], onFileSelect }) {
+export default function File({ items = [], onFileSelect , content,loading}) {
   const [expandedFolders, setExpandedFolders] = useState({});
 
   function toggleFolder(path) {
@@ -108,6 +108,10 @@ export default function File({ items = [], onFileSelect }) {
   }
 
   return (
+    <>
+    <div className="flex h-[80vh] overflow-hidden rounded-lg border border-gray-300">
+    <aside className="w-1/3 min-w-[220px] overflow-auto border-r border-gray-300 bg-white">
+        <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800"></div>
     <div className="select-none p-2 text-sm">
       {items.length > 0 ? (
         renderTree(items)
@@ -117,5 +121,8 @@ export default function File({ items = [], onFileSelect }) {
         </p>
       )}
     </div>
+    </aside>
+    </div>
+    </>
   );
 }
