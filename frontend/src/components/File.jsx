@@ -110,7 +110,7 @@ export default function File({ items = [], onFileSelect , content,loading}) {
   return (
     <>
     <div className="flex h-[80vh] overflow-hidden rounded-lg border border-gray-300">
-    <aside className="w-1/3 min-w-[220px] overflow-auto border-r border-gray-300 bg-white">
+    <aside className="w-1/3 min-w-55 overflow-auto border-r border-gray-300 bg-white">
         <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800"></div>
     <div className="select-none p-2 text-sm">
       {items.length > 0 ? (
