@@ -122,6 +122,35 @@ export default function File({ items = [], onFileSelect , content,loading}) {
       )}
     </div>
     </aside>
+
+     <main className="min-w-0 flex-1 overflow-auto bg-gray-950 md:mb-15">
+        {loading ? (
+          <p className="p-4 text-gray-300">
+            Loading file...
+          </p>
+        // ) : error ? (
+        //   <p className="p-4 text-red-400">{error}</p>
+        ) : content ? (
+          <>
+            {/* File name header */}
+            <div className="sticky top-0 border-b border-gray-700 bg-gray-900 px-4 py-3">
+              <span className="text-sm text-gray-200">
+                {content.path}
+              </span>
+            </div>
+
+            {/* Source code */}
+            <pre className="overflow-auto p-4 text-sm leading-6 text-gray-200">
+              <code>{content.content}</code>
+            </pre>
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center text-gray-500">
+            Select a file to view its code
+          </div>
+        )}
+      </main>
+
     </div>
     </>
   );

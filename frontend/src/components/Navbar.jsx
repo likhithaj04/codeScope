@@ -15,7 +15,7 @@ export default function Navbar({handleSearch,urldata,setUrlData}) {
 //   }
 
   return (
-    <div className="bg-slate-900 text-white px-5 py-6 md:px-10 md:py-8">
+    <div className="bg-slate-900 text-white px-5 py-6 ">
 
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-7">
         <h1 className="font-bold text-2xl md:text-3xl tracking-tight">

@@ -50,10 +50,24 @@ setLoading(false)
 
   return (
     <>
-     <Navbar handleSearch={handleSearch} urldata={urldata} setUrlData={setUrlData}/>
-   { repoData && <File items={repoData.tree.children} onFileSelect={handleFileSelect} content={content} loading={loading}/>
-   
-   } 
+<div className="h-screen overflow-hidden flex flex-col">
+  <Navbar
+    handleSearch={handleSearch}
+    urldata={urldata}
+    setUrlData={setUrlData}
+  />
+
+  {repoData && (
+    <div className="min-h-0 flex-1">
+      <File
+        items={repoData.tree.children}
+        onFileSelect={handleFileSelect}
+        content={content}
+        loading={loading}
+      />
+    </div>  
+  )}
+</div>
     </>
    
   )
