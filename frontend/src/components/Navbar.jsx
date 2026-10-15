@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import api from '../../utils/api.js'
 
-export default function Navbar() {
-  const [urldata,setUrlData]=useState("")
+export default function Navbar({handleSearch,urldata,setUrlData}) {
+//   const [urldata,setUrlData]=useState("")
 
-  async function handleSearch() {
-    console.log(urldata);
+//   async function handleSearch() {
+//     console.log(urldata);
     
-    const search = await api.post("/api/repository",{
-      url:urldata
-    })
-console.log(search.data);
+//     const search = await api.post("/api/repository",{
+//       url:urldata
+//     })
+// console.log(search.data.tree.children);
 
-  }
+//   }
 
   return (
     <div className="bg-slate-900 text-white px-5 py-6 md:px-10 md:py-8">

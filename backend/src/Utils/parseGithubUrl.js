@@ -28,8 +28,10 @@ export function parseGithubUrl(url) {
     }
     const owner = parts[0]
     const repo = parts[1]
+    console.log(owner,repo);
 
     return { owner, repo }
+    
 }
 
 // const result = parseGithubUrl(

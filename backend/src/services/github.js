@@ -20,6 +20,7 @@ export async function getRepository(url) {
         owner,
         repo
     })
+// console.log('reached here',response);
 
     const branchResponse = await octokit.rest.repos.getBranch({
   owner,
@@ -39,7 +40,7 @@ export async function getRepository(url) {
 // console.log(tree);
 
 const files=gitTree.data.tree.filter((item)=>item.type==='blob')
-// console.log(files);
+console.log("files fetched",files);
 
 
 
