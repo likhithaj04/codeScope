@@ -34,6 +34,55 @@ function walk(node,visit){ //explore all child nodes for dependency
 
 }
 
+function analyseImports(ast,sourceCode){
+    const imports=[]
+    walk(ast.program,(node)=>{
+                if (node.type === "ImportDeclaration") {
+
+        imports.push({
+            source: node.source.value,
+                line: node.loc.start.line,
+                statement: sourceCode.slice(node.start, node.end)
+        })
+    }
+})
+        return imports;
+
+}
+
+// function analyseFunction(ast){
+//     const functions=[]
+//      walk(ast.program,(node)=>{
+//         if(node.type==='FunctionDeclaration'){
+//            functions.push({
+//             name:node.id?.name,
+//             line: node.loc.start.line
+
+//            })
+//         }
+//        else if (
+//     node.type === "VariableDeclarator" &&
+//     node.init?.type === "ArrowFunctionExpression"
+// ) {
+//     functions.push({
+//         name: node.id.name,
+//         line: node.loc.start.line
+//     });
+// }
+
+// else if (
+//     node.type === "VariableDeclarator" &&
+//     node.init?.type === "FunctionExpression"
+// ) {
+//     functions.push({
+//         name: node.id.name,
+//         line: node.loc.start.line
+//     });
+// }
+//      })
+//      return functions
+// }
+
 function analyzeFile(sourceCode){
     const ast =parser.parse(sourceCode,{
         sourceType:"unambiguous",
@@ -41,21 +90,24 @@ function analyzeFile(sourceCode){
     });
 
 
-    const imports=[]
+    const imports=analyseImports(ast,sourceCode)
+const functions=analyseFunction(ast)
+    // for (const node of ast.program.body){
+    //     if(node.type==="ImportDeclaration"){
+    //         imports.push({
+    //             source:node.source.value,
+    //             line:node.loc.start.line,
+    //             statement:sourceCode.slice(node.start,node.end)
+    //         })
+    //     }
+    // }
+    // console.log(ast.program.body.map(node => node.type));
 
-    for (const node of ast.program.body){
-        if(node.type==="ImportDeclaration"){
-            imports.push({
-                source:node.source.value,
-                line:node.loc.start.line,
-                statement:sourceCode.slice(node.start,node.end)
-            })
-        }
-    }
-    console.log(ast.program.body.map(node => node.type));
-walk(ast, (node) => {
-    console.log("Node type:", node.type);
-});return imports
+    
+// walk(ast.program, (node) => {
+//     console.log("Node visited:", node.type);
+// });
+return {imports,functions}  
 }
 
 

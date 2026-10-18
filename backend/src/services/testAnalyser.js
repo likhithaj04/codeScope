@@ -1,11 +1,23 @@
 import analyzeFile from "./dependencyAnalyser.js";
 
 
-const  sourceCode=
-`import File from "./File";
+const sourceCode = `
+import File from "./File";
 
 function Home() {
-  return <File items={files} />;
+    const calculateTotal = () => {
+        return 100;
+    };
+    
+    const handleClick = function () {
+    console.log("Clicked");
+};
+
+    return (
+        <>
+            <File items={files} />
+        </>
+    );
 }
 `;
 
