@@ -56,8 +56,8 @@ function analyseFunction(ast){
         if(node.type==='FunctionDeclaration'){
            functions.push({
             name:node.id?.name,
-            line: node.loc.start.line
-
+            line: node.loc.start.line,
+            kind: "FunctionDeclaration"
            })
         }
        else if (
@@ -66,7 +66,9 @@ function analyseFunction(ast){
 ) {
     functions.push({
         name: node.id.name,
-        line: node.loc.start.line
+        line: node.loc.start.line,
+        kind: "ArrowFunctionExpression"
+
     });
 }
 
@@ -76,7 +78,8 @@ else if (
 ) {
     functions.push({
         name: node.id.name,
-        line: node.loc.start.line
+        line: node.loc.start.line,
+        kind:"FunctionExpression"
     });
 }
      })
