@@ -1,11 +1,14 @@
 {
   "dependencies": {
     "@babel/parser": "^8.0.7",
+    "@xberg-io/tree-sitter-language-pack-wasm": "^1.22.1",
+    "@xberg-io/tree-sitter-language-pack-win32-x64-msvc": "^1.22.1",
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "nodemon": "^3.1.14",
-    "octokit": "^5.0.5"
+    "octokit": "^5.0.5",
+    "web-tree-sitter": "^0.27.1"
   },
   "name": "backend",
   "version": "1.0.0",

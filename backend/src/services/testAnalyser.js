@@ -13,9 +13,9 @@ function Home() {
     console.log("Clicked");
 };
 
-function checkout() {
-    calculateTotal();
-}
+const checkout = () => {
+calculateTotal(price, quantity);
+console.log("Clicked");};
 
     return (
         <>
