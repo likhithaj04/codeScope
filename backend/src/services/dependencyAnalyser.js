@@ -50,38 +50,38 @@ function analyseImports(ast,sourceCode){
 
 }
 
-// function analyseFunction(ast){
-//     const functions=[]
-//      walk(ast.program,(node)=>{
-//         if(node.type==='FunctionDeclaration'){
-//            functions.push({
-//             name:node.id?.name,
-//             line: node.loc.start.line
+function analyseFunction(ast){
+    const functions=[]
+     walk(ast.program,(node)=>{
+        if(node.type==='FunctionDeclaration'){
+           functions.push({
+            name:node.id?.name,
+            line: node.loc.start.line
 
-//            })
-//         }
-//        else if (
-//     node.type === "VariableDeclarator" &&
-//     node.init?.type === "ArrowFunctionExpression"
-// ) {
-//     functions.push({
-//         name: node.id.name,
-//         line: node.loc.start.line
-//     });
-// }
+           })
+        }
+       else if (
+    node.type === "VariableDeclarator" &&
+    node.init?.type === "ArrowFunctionExpression"
+) {
+    functions.push({
+        name: node.id.name,
+        line: node.loc.start.line
+    });
+}
 
-// else if (
-//     node.type === "VariableDeclarator" &&
-//     node.init?.type === "FunctionExpression"
-// ) {
-//     functions.push({
-//         name: node.id.name,
-//         line: node.loc.start.line
-//     });
-// }
-//      })
-//      return functions
-// }
+else if (
+    node.type === "VariableDeclarator" &&
+    node.init?.type === "FunctionExpression"
+) {
+    functions.push({
+        name: node.id.name,
+        line: node.loc.start.line
+    });
+}
+     })
+     return functions
+}
 
 function analyzeFile(sourceCode){
     const ast =parser.parse(sourceCode,{
