@@ -86,6 +86,24 @@ else if (
      return functions
 }
 
+function analyseCalls(ast){
+    const calls=[]
+
+    walk(ast.program,(node)=>{
+        
+        if(node.type==='CallExpression'){
+            // console.log("Callee type:", node.callee.type);
+           calls.push({
+                name: node.callee.type === "Identifier"
+                    ? node.callee.name
+                    : node.callee.property.name,
+                line: node.loc.start.line
+            });
+        }
+    })
+    return calls
+}
+
 function analyzeFile(sourceCode){
     const ast =parser.parse(sourceCode,{
         sourceType:"unambiguous",
@@ -95,6 +113,7 @@ function analyzeFile(sourceCode){
 
     const imports=analyseImports(ast,sourceCode)
 const functions=analyseFunction(ast)
+const calls= analyseCalls(ast)
     // for (const node of ast.program.body){
     //     if(node.type==="ImportDeclaration"){
     //         imports.push({
@@ -110,7 +129,7 @@ const functions=analyseFunction(ast)
 // walk(ast.program, (node) => {
 //     console.log("Node visited:", node.type);
 // });
-return {imports,functions}  
+return {imports,functions,calls}  
 }
 
 
