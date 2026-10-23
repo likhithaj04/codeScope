@@ -2,6 +2,8 @@ import express from "express";
 import { analyzeFile } from "../src/services/genericAnalyser.js";
 import { getRepository, getContent } from "../src/services/github.js";
 import { parseGithubUrl } from '../src/Utils/parseGithubUrl.js';
+import { buildDependencyGraph } from "../src/services/dependencyGraph.js";
+
 
 const router = express.Router();
 
@@ -19,9 +21,10 @@ function flattenTree(node) {
 
 router.post("/analyse", async (req, res) => {
   try {
-    console.log("Analysis route hit");
+      console.log("Analysis route hit");
 
-    const { url } = req.body;
+      const { url } = req.body;
+  console.log(url);
 
     if (!url) {
       return res.status(400).json({
@@ -87,12 +90,16 @@ console.log("Supported source files:", files.length);
       }
     }
 
-    return res.json({
-      repository: repoData.repository,
-      totalFiles: files.length,
-      analyzedFiles: results.filter((r) => !r.error).length,
-      results,
-    });
+ const graph = buildDependencyGraph(results);
+console.log("graphhhhh",graph);
+
+return res.json({
+  repository: repoData.repository,
+  totalFiles: repoData.totalFiles,
+  analyzedFiles: results.filter((r) => !r.error).length,
+  results,
+  graph,
+});
   } catch (error) {
     console.error("Repository analysis failed:", error);
 
