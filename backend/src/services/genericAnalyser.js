@@ -198,4 +198,4 @@ class Cart {
 `;
 
 // console.log(JSON.stringify(analyzeCode(jsSource, "javascript"), null, 2));
-console.log(JSON.stringify(analyzeCode(phpSource, "php"), null, 2));
+// console.log(JSON.stringify(analyzeCode(phpSource, "php"), null, 2));
