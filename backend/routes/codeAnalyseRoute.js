@@ -1,12 +1,26 @@
-import express from 'express'
-const router = express.Router()
-import { analyzeFile } from '../src/services/genericAnalyser.js'
+import express from "express";
+import { analyzeFile } from "../src/services/genericAnalyser.js";
+import { getRepository, getContent } from "../src/services/github.js";
+import { parseGithubUrl } from '../src/Utils/parseGithubUrl.js';
 
-import { getRepository ,getContent} from '../src/services/github.js'
+const router = express.Router();
+
+
+function flattenTree(node) {
+  if (!node) return [];
+
+  if (node.type === "file") {
+    return [node];
+  }
+
+  return (node.children ?? []).flatMap(flattenTree);
+}
 
 
 router.post("/analyse", async (req, res) => {
   try {
+    console.log("Analysis route hit");
+
     const { url } = req.body;
 
     if (!url) {
@@ -15,26 +29,38 @@ router.post("/analyse", async (req, res) => {
       });
     }
 
-    // 1. Parse the GitHub URL
     const parsedRepo = parseGithubUrl(url);
-
-    // 2. Get the repository's file list
     const repoData = await getRepository(url);
 
-    // 3. Keep only supported source files
+    console.log("repoData:", repoData);
+console.log("repoData.files:", repoData?.files);
+
+
     const supportedExtensions = [
       ".js", ".jsx", ".mjs", ".cjs",
       ".ts", ".tsx", ".mts", ".cts",
       ".py", ".java", ".php",
     ];
 
-    const files = repoData.files.filter((file) =>
-      supportedExtensions.includes(
-        file.path.substring(file.path.lastIndexOf(".")).toLowerCase()
-      )
-    );
+    // const files = repoData.files.filter((file) =>
+    //   supportedExtensions.includes(
+    //     file.path.substring(file.path.lastIndexOf(".")).toLowerCase()
+    //   )
+    // );
 
-    // 4. Fetch source and analyze each file
+   const allFiles = flattenTree(repoData.tree);
+
+console.log("Total files in tree:", allFiles.length);
+
+const files = allFiles.filter((file) =>
+  supportedExtensions.includes(
+    file.path.substring(file.path.lastIndexOf(".")).toLowerCase()
+  )
+);
+
+console.log("Supported source files:", files.length);
+
+
     const results = [];
 
     for (const file of files) {
@@ -54,7 +80,6 @@ router.post("/analyse", async (req, res) => {
           });
         }
       } catch (error) {
-        // One inaccessible file should not stop the entire analysis
         results.push({
           path: file.path,
           error: error.message,
@@ -62,17 +87,19 @@ router.post("/analyse", async (req, res) => {
       }
     }
 
-    // 5. Return all file-level analysis results
-    res.json({
+    return res.json({
       repository: repoData.repository,
       totalFiles: files.length,
       analyzedFiles: results.filter((r) => !r.error).length,
       results,
     });
   } catch (error) {
-    res.status(400).json({
+    console.error("Repository analysis failed:", error);
+
+    return res.status(500).json({
       error: error.message,
     });
   }
 });
-export default router
+
+export default router;

@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import repoRoute from './routes/repoContent.js'
+import analyseRoute from './routes/codeAnalyseRoute.js'
 import cors from 'cors'
 
 const app=express()
@@ -15,7 +16,7 @@ app.use(express.json());
 // console.log(response.data);
 
 app.use("/api/repository",repoRoute)
-
+app.use("/repo",analyseRoute)
 
 
 
