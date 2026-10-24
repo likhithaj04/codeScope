@@ -23,7 +23,7 @@ router.post("/analyse", async (req, res) => {
   try {
       console.log("Analysis route hit");
 
-      const { url } = req.body;
+const { url, filePath } = req.body;
   console.log(url);
 
     if (!url) {
@@ -89,10 +89,53 @@ console.log("Supported source files:", files.length);
         });
       }
     }
+const graph = buildDependencyGraph(results);
 
- const graph = buildDependencyGraph(results);
-console.log("graphhhhh",graph);
+console.log("Full repository graph:", graph);
 
+// If a filePath is provided, return a focused graph.
+if (filePath) {
+  const selectedFile = graph.nodes.find(
+    (node) => node.id === filePath
+  );
+
+  if (!selectedFile) {
+    return res.status(404).json({
+      error: `File not found in dependency graph: ${filePath}`,
+    });
+  }
+
+  // Get edges directly connected to the selected file.
+  const connectedEdges = graph.edges.filter(
+    (edge) =>
+      edge.source === filePath ||
+      edge.target === filePath
+  );
+
+  // Include the selected file and its direct neighbors.
+  const connectedNodeIds = new Set([
+    filePath,
+    ...connectedEdges.map((edge) => edge.source),
+    ...connectedEdges.map((edge) => edge.target),
+  ]);
+
+  const focusedGraph = {
+    nodes: graph.nodes.filter((node) =>
+      connectedNodeIds.has(node.id)
+    ),
+    edges: connectedEdges,
+    externalDependencies: [],
+  };
+
+  return res.json({
+    repository: repoData.repository,
+    selectedComponent: filePath,
+    mode: "component",
+    graph: focusedGraph,
+  });
+}
+
+// No filePath: preserve existing full-repository behavior.
 return res.json({
   repository: repoData.repository,
   totalFiles: repoData.totalFiles,
@@ -100,6 +143,8 @@ return res.json({
   results,
   graph,
 });
+
+
   } catch (error) {
     console.error("Repository analysis failed:", error);
 

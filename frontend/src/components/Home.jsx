@@ -22,6 +22,7 @@ const [results, setResults] = useState([]);
 const [graph, setGraph] = useState(null);
 const [analysisCache, setAnalysisCache] = useState({});
 const [showNavbar, setShowNavbar] = useState(true);
+const [selectedComponent,setSelectedComponent]=useState(null)
 
   async function handleSearch() {
     setLoading(true)
@@ -137,6 +138,39 @@ function handleGraphWheel(e) {
   else setShowNavbar(true);               // scroll down -> navbar returns
 }
  
+
+async function handleNodeSelect(filePath) {
+  setSelectedComponent(filePath);
+
+  try {
+    setLoading(true);
+
+    const response = await api.post("/repo/analyse", {
+      url: urldata,
+      filePath,
+    });
+
+    const data = response.data;
+
+    console.log("Component response:", data);
+
+    if (!data.graph || !Array.isArray(data.graph.nodes)) {
+      throw new Error("Backend response does not contain a valid graph.");
+    }
+
+    setGraph(data.graph);
+  } catch (error) {
+    console.error(
+      "Failed to fetch component dependencies:",
+      error.response?.data || error.message
+    );
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+
 return (
   <div className="h-screen overflow-hidden flex flex-col">
     {/* Collapsible navbar */}
@@ -159,7 +193,7 @@ return (
     {/* Main workspace */}
     <div className="flex flex-1 min-h-0 overflow-hidden">
       {/* Left sidebar: always visible in every view, scrollbar hidden */}
-      <aside className="w-64 shrink-0 border-r border-slate-700 bg-slate-900 text-white overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+       <aside  className="w-64 shrink-0 border-r border-slate-700 bg-slate-900 text-white overflow-y-auto [scrollbar:none] [&::-webkit-scrollbar]:hidden">
         <div className="px-4 py-3 border-b border-slate-700">
           <h2 className="text-sm font-semibold">Explorer</h2>
         </div>
@@ -187,11 +221,21 @@ return (
     </div>
   )}
 
-  {!loading && activeView === "graph" && graph && (
-    <div className="h-full w-full" onWheel={handleGraphWheel}>
-      <Visualise graph={graph} />
-    </div>
-  )}
+ {activeView === "graph" && graph && (
+  <div className="relative h-full w-full" onWheel={handleGraphWheel}>
+    <Visualise
+      graph={graph}
+      onNodeSelect={handleNodeSelect}
+      selectedNode={selectedComponent}
+    />
+
+    {loading && (
+      <div className="absolute right-4 top-4 rounded bg-slate-800 px-3 py-2 text-sm text-white">
+        Loading component dependencies...
+      </div>
+    )}
+  </div>
+)}
 
   {!loading && activeView === "impact" && (
     <div className="p-6">

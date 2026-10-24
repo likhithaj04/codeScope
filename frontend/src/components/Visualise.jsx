@@ -14,11 +14,10 @@ const NODE_WIDTH = 170;
 const NODE_HEIGHT = 44;
 
 function getLayout(graph) {
-  // 1. remove self loops (main.jsx -> main.jsx)
+  // 1. remove self loops
   const cleanEdges = graph.edges.filter((e) => e.source !== e.target);
 
   // 2. merge duplicate edges between the same 2 files
-  //    ex: line 3 + line 7 becomes "lines 3, 7"
   const edgeMap = {};
   cleanEdges.forEach((edge) => {
     const key = `${edge.source}->${edge.target}`;
@@ -29,7 +28,7 @@ function getLayout(graph) {
   });
   const mergedEdges = Object.values(edgeMap);
 
-  // 3. let dagre decide the positions
+  // 3. dagre positions
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({ rankdir: "LR", nodesep: 40, ranksep: 140 });
@@ -47,21 +46,10 @@ function getLayout(graph) {
     const pos = g.node(node.id);
     return {
       id: node.id,
-      position: {
-        x: pos.x - NODE_WIDTH / 2,
-        y: pos.y - NODE_HEIGHT / 2,
-      },
+      position: { x: pos.x - NODE_WIDTH / 2, y: pos.y - NODE_HEIGHT / 2 },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
       data: { label: node.label },
-      style: {
-        width: NODE_WIDTH,
-        background: "#1e293b",
-        color: "white",
-        border: "1px solid #475569",
-        borderRadius: 8,
-        fontSize: 13,
-      },
     };
   });
 
@@ -81,24 +69,44 @@ function getLayout(graph) {
   return { nodes, edges };
 }
 
-export default function Visualise({ graph }) {
+export default function Visualise({ graph, onNodeSelect, selectedNode }) {
+  // layout only recomputes when the graph changes
   const layout = useMemo(
     () => (graph?.nodes?.length ? getLayout(graph) : null),
     [graph]
   );
 
-  if (!layout) {
-    return <p className="p-6">No graph data available.</p>;
-  }
+  // styling recomputes on selection, without re-running dagre
+  const styledNodes = useMemo(() => {
+    if (!layout) return [];
+    return layout.nodes.map((node) => {
+      const selected = node.id === selectedNode;
+      return {
+        ...node,
+        style: {
+          width: NODE_WIDTH,
+          background: selected ? "#1d4ed8" : "#1e293b",
+          color: "white",
+          border: selected ? "1px solid #93c5fd" : "1px solid #475569",
+          borderRadius: 8,
+          fontSize: 13,
+          cursor: "pointer",
+        },
+      };
+    });
+  }, [layout, selectedNode]);
 
-  const { nodes, edges } = layout;
+  if (!layout) {
+    return <p className="p-6 text-slate-300">No graph data available.</p>;
+  }
 
   return (
     <div className="w-full h-full">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={styledNodes}
+        edges={layout.edges}
         fitView
+        onNodeClick={(_, node) => onNodeSelect?.(node.id)}
         zoomOnScroll={false}
         zoomOnPinch={false}
         zoomOnDoubleClick={false}
