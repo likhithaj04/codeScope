@@ -50,30 +50,49 @@ export function buildDependencyGraph(results) {
     return candidates.find((candidate) => fileMap.has(candidate)) ?? null;
   }
 
-  for (const file of results) {
-    for (const item of file.imports ?? []) {
-      const targetPath = resolveLocalImport(file.path, item.source);
+// Inside buildDependencyGraph()
 
-      if (targetPath) {
-        edges.push({
-          source: file.path,
-          target: targetPath,
-          type: "imports",
-          line: item.line,
-        });
-      } else if (
-        item.source &&
-        !item.source.startsWith("./") &&
-        !item.source.startsWith("../")
-      ) {
-        externalDependencies.add(item.source);
-      }
+const externalNodes = new Map();
+
+for (const file of results) {
+  for (const item of file.imports ?? []) {
+    const targetPath = resolveLocalImport(file.path, item.source);
+
+    if (targetPath) {
+      edges.push({
+        source: file.path,
+        target: targetPath,
+        type: "imports",
+        line: item.line,
+        label: `line ${item.line}`,
+      });
+    } else if (
+      item.source &&
+      !item.source.startsWith("./") &&
+      !item.source.startsWith("../")
+    ) {
+      const externalId = `external:${item.source}`;
+
+      externalNodes.set(externalId, {
+        id: externalId,
+        label: item.source,
+        type: "external",
+      });
+
+      edges.push({
+        source: file.path,
+        target: externalId,
+        type: "external-import",
+        line: item.line,
+        label: `line ${item.line}`,
+      });
     }
   }
+}
 
-  return {
-    nodes,
-    edges,
-    externalDependencies: [...externalDependencies].sort(),
-  };
+return {
+  nodes: [...nodes, ...externalNodes.values()],
+  edges,
+  externalDependencies: [...externalDependencies].sort(),
+};
 }

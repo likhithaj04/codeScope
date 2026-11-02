@@ -19,7 +19,11 @@ export default function Home() {
   const [fileCache, setFileCache] = useState({})
  const [activeView, setActiveView] = useState("files");
 const [results, setResults] = useState([]);
-const [graph, setGraph] = useState(null);
+const [graph, setGraph] = useState({
+  nodes: [],
+  edges: [],
+  externalDependencies: []
+});
 const [analysisCache, setAnalysisCache] = useState({});
 const [showNavbar, setShowNavbar] = useState(true);
 const [selectedComponent,setSelectedComponent]=useState(null)
@@ -101,6 +105,10 @@ async function handleGetNodes() {
 
     setGraph(data.graph);
     setResults(data.results);
+
+
+   console.log(data.graph);
+   
 
     setAnalysisCache((prev) => ({
       ...prev,
@@ -224,8 +232,9 @@ return (
  {activeView === "graph" && graph && (
   <div className="relative h-full w-full" onWheel={handleGraphWheel}>
     <Visualise
-      graph={graph}
-      onNodeSelect={handleNodeSelect}
+ nodes={graph.nodes}
+  edges={graph.edges}     
+   onNodeSelect={handleNodeSelect}
       selectedNode={selectedComponent}
     />
 
